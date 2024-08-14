@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Drag and Drop Example</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .draggable {
+            cursor: move;
+        }
+        .droppable {
+            min-height: 100px;
+            border: 2px dashed #ccc;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        .dragging {
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="mb-4">Dynamic Drag and Drop Example</h2>
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Items to Drag</h3>
+                <div id="items" class="d-flex flex-wrap mb-3"></div>
+                <div class="input-group mb-3">
+                    <input type="text" id="newItemInput" class="form-control" placeholder="New item text">
+                    <button class="btn btn-outline-secondary" type="button" id="addItemBtn">Add Item</button>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h3>Drop Zones</h3>
+                <div id="dropZones"></div>
+                <button class="btn btn-outline-secondary" type="button" id="addDropZoneBtn">Add Drop Zone</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const itemsContainer = document.getElementById('items');
+        const dropZonesContainer = document.getElementById('dropZones');
+        const newItemInput = document.getElementById('newItemInput');
+        const addItemBtn = document.getElementById('addItemBtn');
+        const addDropZoneBtn = document.getElementById('addDropZoneBtn');
+
+        let itemCounter = 1;
+        let dropZoneCounter = 1;
+
+        function createDraggable(text) {
+            const draggable = document.createElement('div');
+            draggable.className = 'draggable btn btn-primary m-2';
+            draggable.draggable = true;
+            draggable.textContent = text;
+            draggable.addEventListener('dragstart', dragStart);
+            draggable.addEventListener('dragend', dragEnd);
+            return draggable;
+        }
+
+        function createDropZone() {
+            const dropZone = document.createElement('div');
+            dropZone.className = 'droppable';
+            dropZone.innerHTML = `<h4>Drop Zone ${dropZoneCounter}</h4>`;
+            dropZone.addEventListener('dragover', dragOver);
+            dropZone.addEventListener('dragleave', dragLeave);
+            dropZone.addEventListener('drop', drop);
+            dropZoneCounter++;
+            return dropZone;
+        }
+
+        addItemBtn.addEventListener('click', () => {
+            const text = newItemInput.value.trim() || `Item ${itemCounter}`;
+            itemsContainer.appendChild(createDraggable(text));
+            newItemInput.value = '';
+            itemCounter++;
+        });
+
+        addDropZoneBtn.addEventListener('click', () => {
+            dropZonesContainer.appendChild(createDropZone());
+        });
+
+        function dragStart() {
+            this.classList.add('dragging');
+        }
+
+        function dragEnd() {
+            this.classList.remove('dragging');
+        }
+
+        function dragOver(e) {
+            e.preventDefault();
+            this.style.background = '#f0f0f0';
+        }
+
+        function dragLeave() {
+            this.style.background = '';
+        }
+
+        function drop(e) {
+            e.preventDefault();
+            const draggable = document.querySelector('.dragging');
+            this.appendChild(draggable);
+            this.style.background = '';
+        }
+
+        // Initialize with some default items and a drop zone
+        itemsContainer.appendChild(createDraggable('Item 1'));
+        itemsContainer.appendChild(createDraggable('Item 2'));
+        itemsContainer.appendChild(createDraggable('Item 3'));
+        dropZonesContainer.appendChild(createDropZone());
+    </script>
+</body>
+</html>
